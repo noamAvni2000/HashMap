@@ -13,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +59,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 llButtons.removeAllViews();
-                dictionary.keySet();
+                ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
+                keys.sort(String::compareTo);
+                for(String key : keys)
+                {
+                    Button btn = new Button(MainActivity.this);
+                    btn.setText(key);
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(MainActivity.this, dictionary.get(btn.getText().toString()), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    llButtons.addView(btn);
+                }
             }
         });
     }
