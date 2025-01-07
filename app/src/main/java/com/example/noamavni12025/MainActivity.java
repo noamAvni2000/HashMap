@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 btnNew.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(MainActivity.this, dictionary.get(etKey.getText().toString()), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, dictionary.get(btnNew.getText().toString()), Toast.LENGTH_SHORT).show();
                     }
                 });
                 llButtons.addView(btnNew);
@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                llButtons.removeAllViews();
+                dictionary.keySet();
             }
         });
     }
