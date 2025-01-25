@@ -7,51 +7,38 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
+    HashMap<String, String> dictionary = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         EditText etKey, etValue;
-        Button btnAdd, btnClear;
+        Button btnAdd, btnClear, btnRemove;
         LinearLayout llButtons;
-        HashMap<String, String> dictionary = new HashMap<>();
+
 
         etKey = findViewById(R.id.etKey);
         etValue = findViewById(R.id.etValue);
         btnAdd = findViewById(R.id.btnAdd);
         btnClear = findViewById(R.id.btnClear);
+        btnRemove = findViewById(R.id.btnRemove);
         llButtons = findViewById(R.id.llButtons);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dictionary.put(etKey.getText().toString(), etValue.getText().toString());
-                Button btnNew = new Button(MainActivity.this);
-                btnNew.setText(etKey.getText().toString());
-                btnNew.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(MainActivity.this, dictionary.get(btnNew.getText().toString()), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                llButtons.addView(btnNew);
+                String key = etKey.getText().toString();
+                String value = etValue.getText().toString();
+                dictionary.put(key, value);
+                addButtonToLayout(key);
             }
         });
 
@@ -59,21 +46,44 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 llButtons.removeAllViews();
-                ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
-                keys.sort(String::compareTo);
-                for(String key : keys)
-                {
-                    Button btn = new Button(MainActivity.this);
-                    btn.setText(key);
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Toast.makeText(MainActivity.this, dictionary.get(btn.getText().toString()), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    llButtons.addView(btn);
+                addButtonsForDictionary(dictionary);
+            }
+        });
+
+        btnRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String keyToRemove = etKey.getText().toString();
+                if (dictionary.containsKey(keyToRemove)) {
+                    dictionary.remove(keyToRemove);
+                    llButtons.removeAllViews();
+                    addButtonsForDictionary(dictionary);
+                    Toast.makeText(MainActivity.this, "Removed: " + keyToRemove, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Key not found!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private void addButtonsForDictionary(HashMap<String, String> dictionary) {
+        ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
+        keys.sort(String::compareTo);
+        for (String key : keys) {
+            addButtonToLayout(key);
+        }
+    }
+
+    private void addButtonToLayout(String key) {
+        Button btnNew = new Button(MainActivity.this);
+        btnNew.setText(key);
+        btnNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, dictionary.get(btnNew.getText().toString()), Toast.LENGTH_SHORT).show();
+            }
+        });
+        LinearLayout llButtons = findViewById(R.id.llButtons);
+        llButtons.addView(btnNew);
     }
 }
